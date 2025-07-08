@@ -15,12 +15,12 @@ public class Main {
                 === Nivel 2 -> creación de anotaciones @JsonSerializable personalizadas ===
                 === Nivel 3 -> uso de reflexión para leerlas en tiempo de ejecución (RUNTIME) ===""");
 
-
         System.out.println("\n-Procesando objetos con anotación:");
         AnnotationProcessor.processJsonSerializable(person);
         AnnotationProcessor.processJsonSerializable(product);
 
         System.out.println("\n-Procesando objeto sin anotación:");
         AnnotationProcessor.processJsonSerializable(worker);
+
     }
 }

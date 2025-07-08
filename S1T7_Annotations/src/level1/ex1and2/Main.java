@@ -21,7 +21,8 @@ public class Main {
     @SuppressWarnings("deprecation")
     public static void useDeprecatedMethods(OnSiteWorker onSiteWorker, OnLineWorker onLineWorker) {
         System.out.println("Utilizando métodos obsoletos -->" +
-                  "\n    Cálculo erroneo de sueldo onLine: " + onLineWorker.wrongCalculation(40)
-                + "\n    Cálculo erroneo de sueldo presencial: " + onSiteWorker.calculateWrongWay(40));
+                  "\n    Cálculo erróneo de sueldo onLine: " + onLineWorker.wrongCalculation(40)
+                + "\n    Cálculo erróneo de sueldo presencial: " + onSiteWorker.calculateWrongWay(40));
+
     }
 }

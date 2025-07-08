@@ -11,7 +11,7 @@ public class OnLineWorker extends Worker {
         return (super.calculateSalary(hoursWorked)) + INTERNET_RATE;
     }
 
-    @Deprecated
+    @Deprecated (since = "2022", forRemoval = true)
     public double wrongCalculation(int hours) {
         return hours * getPricePerHour();
     }

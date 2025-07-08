@@ -11,7 +11,7 @@ public class OnSiteWorker extends Worker {
         return ((super.calculateSalary(hoursWorked)) + gasoline);
     }
 
-    @Deprecated
+    @Deprecated(since = "2022", forRemoval = true)
     public double calculateWrongWay(int hours) {
         return hours * getPricePerHour() * 0.9;
     }

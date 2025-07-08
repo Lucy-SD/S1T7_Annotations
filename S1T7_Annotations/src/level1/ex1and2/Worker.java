@@ -11,30 +11,10 @@ public class Worker {
         this.pricePerHour = pricePerHour;
     }
 
-    public String getFirsName() {
-        return firsName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
     public double getPricePerHour() {
         return pricePerHour;
     }
-
-    public void setFirsName(String firsName) {
-        this.firsName = firsName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setPricePerHour(double pricePerHour) {
-        this.pricePerHour = pricePerHour;
-    }
-
+    
     public double calculateSalary(int hoursWorked) {
         return hoursWorked * this.pricePerHour;
     }
