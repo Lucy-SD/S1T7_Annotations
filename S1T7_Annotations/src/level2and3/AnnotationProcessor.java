@@ -1,73 +1,76 @@
 package level2and3;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
 public class AnnotationProcessor {
 
-    private static String createJsonFromObj(Object obj) {
-        StringBuilder json = new StringBuilder();
-        json.append("{\n");
-
-        Class<?> clazz = obj.getClass();
-        Field[] fields = clazz.getDeclaredFields();
-
-        for(int i = 0; i < fields.length; i++) {
-            Field field = fields [i];
-
-            field.setAccessible(true);
-
-            try {
-                Object value = field.get(obj);
-                json.append("\"").append(field.getName()).append("\" : \"").append(value);
-
-                if(i < fields.length - 1) {
-                    json.append("\",\n");
-                }
-            } catch (IllegalAccessException e) {
-                System.out.println("Error al acceder al campo: " + field.getName());
-            }
+    private void validateJsonSerializable(Class<?> clazz) {
+        if (!clazz.isAnnotationPresent(JsonSerializable.class)) {
+            throw new IllegalArgumentException("La clase " + clazz.getSimpleName() + " NO contiene anotaciones " +
+                    "con @JsonSerializable.\nNo se puede generar un archivo JSon.");
         }
-        json.append("\"\n}");
+    }
+
+    private String getJsonSerializableDirectory(Class<?> clazz) {
+        return clazz.getAnnotation(JsonSerializable.class).directory();
+    }
+
+    private void appendFieldToJson(StringBuilder json, Field field, Object obj, boolean isLastField) {
+
+        try {
+            Object value = field.get(obj);
+            json.append("\t\"")
+                    .append(field.getName())
+                    .append("\" : \"")
+                    .append(value)
+                    .append("\"");
+
+            if (!isLastField) {
+                json.append(", ");
+            }
+            json.append("\n");
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Error al acceder al campo: " + field.getName(), e);
+        }
+    }
+
+    private String convertObjectToJson(Object obj) {
+        StringBuilder json = new StringBuilder("{\n");
+        Field[] fields = obj.getClass().getDeclaredFields();
+
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            field.setAccessible(true);
+            appendFieldToJson(json, field, obj, i == fields.length - 1);
+        }
+        json.append("}");
         return json.toString();
     }
 
-    private static void writeJsonToFile(String json, String directory) {
+    private void writeJsonToFile(String json, String filePath) {
 
-        try (FileWriter writer = new FileWriter(directory)){
+        try (FileWriter writer = new FileWriter(filePath)) {
 
             writer.write(json);
-            System.out.println("Archivo Json creado correctamente: " + directory
-            + "\nContenido del archivo:\n" + json);
+            System.out.println("Archivo JSON creado correctamente: <" + filePath
+                    + ">.\nContenido del archivo:\n" + json);
 
         } catch (IOException e) {
-            System.out.println("Error: algo ha salido mal.");
+            throw new RuntimeException("Error al escribir el archivo JSON: " + filePath, e);
         }
-
     }
 
-    public static void processJsonSerializable(Object obj) {
+    public void processJsonSerializable(Object obj) {
         Class<?> clazz = obj.getClass();
 
-        System.out.println("--- Procesando objeto de la clase: " + clazz.getSimpleName() + " ---");
+        System.out.println("--- Objeto de la clase: " + clazz.getSimpleName() + " ---");
 
-        if(clazz.isAnnotationPresent(JsonSerializable.class)) {
-            System.out.println("Anotación efectuada correctamente.");
+        validateJsonSerializable(clazz);
 
-            JsonSerializable annotation = clazz.getAnnotation(JsonSerializable.class);
-            String directory = annotation.directory();
-
-            System.out.println("La anotación se guardó correctamente en el directorio.");
-
-            String json = createJsonFromObj(obj);
-            writeJsonToFile(json, directory);
-        } else {
-            System.out.println("La clase " + clazz.getSimpleName() + " NO contiene anotaciones " +
-                    "con @JsonSerializable.\nNo se puede generar un archivo JSon.");
-        }
-
+        String directory = getJsonSerializableDirectory(clazz);
+        String json = convertObjectToJson(obj);
+        writeJsonToFile(json, directory);
     }
-
 }
